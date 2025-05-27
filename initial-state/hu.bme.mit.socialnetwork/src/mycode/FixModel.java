@@ -8,6 +8,10 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EAttribute;
+
 import socialNetworkPackage.Person;
 import socialNetworkPackage.SocialNetwork;
 import socialNetworkPackage.SocialNetworkPackagePackage;
@@ -60,17 +64,32 @@ public class FixModel {
 	 * @param sn
 	 */
 	public static void pocessModel(SocialNetwork sn) {
-		// If you need an iterator for all objects in sn recursively,
-		// you can use the following method:
-		// sn.eAllContents()
-		
-		for (Person p : sn.getPeople()) {
-			if(p.getName() == null || p.getName().isEmpty()) {
-				p.setName("unnamed");
-			} else {
-				System.out.println(p.getName());
-				p.setName(p.getName().toUpperCase());
-				System.out.println(p.getName());
+		// Iterate over all objects in the model recursively
+		for (EObject obj : sn.eAllContents().toList()) {
+			for (EStructuralFeature feature : obj.eClass().getEAllStructuralFeatures()) {
+				if (feature instanceof EAttribute) {
+					Object value = obj.eGet(feature);
+					if (value == null || (value instanceof String && ((String) value).isEmpty())) {
+						if (feature.getEType().getInstanceClass() == String.class) {
+							obj.eSet(feature, "undefined");
+						} else if (feature.getEType().getInstanceClass() == int.class || feature.getEType().getInstanceClass() == Integer.class) {
+							obj.eSet(feature, -1);
+						} // Add more types as needed
+					}
+				}
+			}
+		}
+		// Also process top-level SocialNetwork attributes if any
+		for (EStructuralFeature feature : sn.eClass().getEAllStructuralFeatures()) {
+			if (feature instanceof EAttribute) {
+				Object value = sn.eGet(feature);
+				if (value == null || (value instanceof String && ((String) value).isEmpty())) {
+					if (feature.getEType().getInstanceClass() == String.class) {
+						sn.eSet(feature, "undefined");
+					} else if (feature.getEType().getInstanceClass() == int.class || feature.getEType().getInstanceClass() == Integer.class) {
+						sn.eSet(feature, -1);
+					}
+				}
 			}
 		}
 	}

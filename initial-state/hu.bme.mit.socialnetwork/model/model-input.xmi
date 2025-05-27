@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="ASCII"?>
 <hu.bme.mit.socialnetwork:SocialNetwork xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hu.bme.mit.socialnetwork="hu.bme.mit.socialnetwork">
-  <people parent="//@people.1" name="A"/>
-  <people name="B" />
+  <people xsi:type="hu.bme.mit.socialnetwork:Person" name="Alice" email="alice@example.com" age="25">
+    <posts content="Hello World!" timestamp="2024-01-01T10:00:00.000Z">
+      <comments text="Nice post!" createdAt="2024-01-01T11:00:00.000Z">
+        <author name="Bob" email="bob@example.com" age="30"/>
+      </comments>
+      <likes type="thumbs-up">
+        <person name="Charlie" email="charlie@example.com" age="28"/>
+      </likes>
+    </posts>
+    <messages text="Hi Bob!" sentAt="2024-01-02T09:00:00.000Z">
+      <sender name="Alice"/>
+      <receiver name="Bob"/>
+    </messages>
+    <likes type="heart">
+      <post content="Another post"/>
+    </likes>
+  </people>
+  <people xsi:type="hu.bme.mit.socialnetwork:Person" name="Bob" email="bob@example.com" age="30">
+    <posts content="Bob's first post" timestamp="2024-01-03T12:00:00.000Z"/>
+    <messages text="Hello Alice!" sentAt="2024-01-02T10:00:00.000Z">
+      <sender name="Bob"/>
+      <receiver name="Alice"/>
+    </messages>
+  </people>
+  <people xsi:type="hu.bme.mit.socialnetwork:Admin" name="Admin1" email="admin1@example.com" age="40" adminLevel="2">
+    <managedProjects title="Project Alpha" description="First project"/>
+  </people>
+  <projects title="Project Alpha" description="First project">
+    <members name="Alice"/>
+    <members name="Bob"/>
+    <posts content="Project post" timestamp="2024-01-04T14:00:00.000Z"/>
+  </projects>
+  <projects title="Project Beta" description="Second project">
+    <members name="Charlie"/>
+    <posts content="Beta post" timestamp="2024-01-05T15:00:00.000Z"/>
+  </projects>
+  <subscriptions startDate="2024-01-01" endDate="2024-12-31">
+    <subscriber name="Alice"/>
+    <project title="Project Alpha"/>
+  </subscriptions>
+  <subscriptions startDate="2024-02-01" endDate="2024-12-31">
+    <subscriber name="Bob"/>
+    <project title="Project Beta"/>
+  </subscriptions>
 </hu.bme.mit.socialnetwork:SocialNetwork>
