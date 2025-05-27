@@ -2,15 +2,15 @@ package mycode;
 
 import java.io.IOException;
 
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EAttribute;
 
 import socialNetworkPackage.Person;
 import socialNetworkPackage.SocialNetwork;
@@ -64,33 +64,45 @@ public class FixModel {
 	 * @param sn
 	 */
 	public static void pocessModel(SocialNetwork sn) {
-		// Iterate over all objects in the model recursively
-		for (EObject obj : sn.eAllContents().toList()) {
-			for (EStructuralFeature feature : obj.eClass().getEAllStructuralFeatures()) {
-				if (feature instanceof EAttribute) {
-					Object value = obj.eGet(feature);
-					if (value == null || (value instanceof String && ((String) value).isEmpty())) {
-						if (feature.getEType().getInstanceClass() == String.class) {
-							obj.eSet(feature, "undefined");
-						} else if (feature.getEType().getInstanceClass() == int.class || feature.getEType().getInstanceClass() == Integer.class) {
-							obj.eSet(feature, -1);
-						} // Add more types as needed
-					}
-				}
-			}
-		}
-		// Also process top-level SocialNetwork attributes if any
-		for (EStructuralFeature feature : sn.eClass().getEAllStructuralFeatures()) {
-			if (feature instanceof EAttribute) {
-				Object value = sn.eGet(feature);
-				if (value == null || (value instanceof String && ((String) value).isEmpty())) {
-					if (feature.getEType().getInstanceClass() == String.class) {
-						sn.eSet(feature, "undefined");
-					} else if (feature.getEType().getInstanceClass() == int.class || feature.getEType().getInstanceClass() == Integer.class) {
-						sn.eSet(feature, -1);
-					}
-				}
-			}
-		}
-	}
+        // Use TreeIterator for recursive traversal (as in test code)
+        TreeIterator<EObject> iterator = ((EObject) sn).eAllContents();
+        while (iterator.hasNext()) {
+            EObject obj = iterator.next();
+            for (EStructuralFeature feature : obj.eClass().getEAllStructuralFeatures()) {
+                if (feature instanceof EAttribute) {
+                    Object value = obj.eGet(feature);
+                    if (value == null || (value instanceof String && ((String) value).isEmpty())) {
+                        Class<?> type = feature.getEType().getInstanceClass();
+                        if (type == String.class) {
+                            obj.eSet(feature, "undefined");
+                        } else if (type == int.class || type == Integer.class) {
+                            obj.eSet(feature, -1);
+                        } else if (type == boolean.class || type == Boolean.class) {
+                            obj.eSet(feature, false);
+                        } else if (type == double.class || type == Double.class) {
+                            obj.eSet(feature, -1.0);
+                        }
+                    }
+                }
+            }
+        }
+        // Also process top-level SocialNetwork attributes if any
+        for (EStructuralFeature feature : ((EObject) sn).eClass().getEAllStructuralFeatures()) {
+            if (feature instanceof EAttribute) {
+                Object value = ((EObject) sn).eGet(feature);
+                if (value == null || (value instanceof String && ((String) value).isEmpty())) {
+                    Class<?> type = feature.getEType().getInstanceClass();
+                    if (type == String.class) {
+                        ((EObject) sn).eSet(feature, "undefined");
+                    } else if (type == int.class || type == Integer.class) {
+                        ((EObject) sn).eSet(feature, -1);
+                    } else if (type == boolean.class || type == Boolean.class) {
+                        ((EObject) sn).eSet(feature, false);
+                    } else if (type == double.class || type == Double.class) {
+                        ((EObject) sn).eSet(feature, -1.0);
+                    }
+                }
+            }
+        }
+    }
 }
